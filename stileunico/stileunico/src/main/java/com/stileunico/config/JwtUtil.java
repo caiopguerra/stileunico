@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -13,11 +14,13 @@ import java.util.function.Function;
 @Component
 public class JwtUtil {
 
-    private final String SECRET_KEY = "stileunico-secret-key-para-jwt-token-123456789"; // use algo mais seguro em produção
+    @Value("${jwt.secret}")
+    private String secretKey = "D9f#3ksL02!mQwZ8@P1vR7tG6bXnH4cC9yTwLmS2pFvKjUeRbAqW0zNhYgTdPs"; // agora vem do application.properties ou variável de ambiente
+
     private final long EXPIRATION_TIME = 1000 * 60 * 60; // 1 hora
 
     private Key getSigningKey() {
-        return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
+        return Keys.hmacShaKeyFor(secretKey.getBytes());
     }
 
     public String extractUsername(String token) {
