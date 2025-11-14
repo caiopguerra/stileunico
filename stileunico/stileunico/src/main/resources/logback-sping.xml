@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="30 seconds">
+
+    <!-- Diretório de logs -->
+    <property name="LOG_PATH" value="logs" />
+    <property name="LOG_FILE" value="${LOG_PATH}/stileunico-log.xml" />
+
+    <!-- Converte System.out e System.err para o logger -->
+    <redirectSystemOut>true</redirectSystemOut>
+    <redirectSystemErr>true</redirectSystemErr>
+
+    <!-- Appender: grava logs em arquivo XML -->
+    <appender name="XML_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_FILE}</file>
+
+        <!-- Roda os logs diariamente e mantém 30 dias -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/stileunico-%d{yyyy-MM-dd}.xml.zip</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+
+        <!-- Formato XML -->
+        <encoder class="ch.qos.logback.classic.encoder.LayoutWrappingEncoder">
+            <layout class="ch.qos.logback.classic.html.XMLLayout"/>
+        </encoder>
+    </appender>
+
+    <!-- Appender para exibir logs no console -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%cyan(%d{HH:mm:ss}) %highlight(%-5level) %magenta(%logger{15}) - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Nível global -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="XML_FILE" />
+        <appender-ref ref="ERROR_FILE" />
+    </root>
+
+    <!-- Log de erros apenas -->
+<appender name="ERROR_FILE" class="ch.qos.logback.core.FileAppender">
+    <file>${LOG_PATH}/erros.xml</file>
+    <filter class="ch.qos.logback.classic.filter.LevelFilter">
+        <level>ERROR</level>
+        <onMatch>ACCEPT</onMatch>
+        <onMismatch>DENY</onMismatch>
+    </filter>
+    <encoder class="ch.qos.logback.classic.encoder.LayoutWrappingEncoder">
+        <layout class="ch.qos.logback.classic.html.XMLLayout"/>
+    </encoder>
+</appender>
+
+
+</configuration>
