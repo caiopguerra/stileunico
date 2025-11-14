@@ -1,20 +1,18 @@
-# Use uma imagem oficial do Java
-FROM openjdk:17-jdk-slim
-
-# Diretório da aplicação dentro do container
+FROM maven:3.9.6-eclipse-temurin-17 AS build
 WORKDIR /app
 
-# Copiar todos os arquivos do projeto
-COPY stileunico/stileunico/ .
+COPY pom.xml .
 
-# Dar permissão para o Maven Wrapper
-RUN chmod +x mvnw
+COPY src ./src
 
-# Build da aplicação (gera o JAR)
-RUN ./mvnw clean package -DskipTests
+RUN mvn -B -DskipTests clean package
 
-# Expor a porta que o Spring Boot vai rodar
+
+FROM eclipse-temurin:17-jdk
+WORKDIR /app
+
+COPY --from=build /app/target/*.jar app.jar
+
 EXPOSE 8080
 
-# Comando para iniciar a aplicação
-CMD ["java", "-jar", "target/stileunico-0.0.1-SNAPSHOT.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
